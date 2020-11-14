@@ -11,4 +11,4 @@ class Player:
         else:
             print(f"room: {self.current_room.id}, trying {direction}")
             print("You cannot move in that direction.")
-            breakpoint()
+            # breakpoint()

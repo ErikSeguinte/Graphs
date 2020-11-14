@@ -1,4 +1,4 @@
-from typing import Deque
+from collections import deque
 from room import Room
 from player import Player
 from world import World
@@ -19,8 +19,8 @@ world = World()
 # map_file = "maps/test_loop_fork.txt"
 map_file = "maps/main_maze.txt"
 
-path = Path("projects/adventure/" + map_file)
-
+# path = Path("projects/adventure/" + map_file)
+path = map_file
 # Loads the map into a dictionary
 room_graph=literal_eval(open(path, "r").read())
 world.load_graph(room_graph)
@@ -29,7 +29,7 @@ world.load_graph(room_graph)
 world.print_rooms()
 
 player:Player = Player(world.starting_room)
-player.path_taken = Deque()
+player.path_taken = deque()
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
@@ -50,7 +50,9 @@ def traverse_path(player, path_taken = None ):
         player.travel(path_taken)
     room = player.current_room
     global visited_rooms
+    global inv
     if room.id in visited_rooms:
+        player.travel(inv[path_taken])
         return
     
     visited_rooms.add(room.id)
@@ -59,13 +61,14 @@ def traverse_path(player, path_taken = None ):
     exits = room.get_exits()
     # print(f"room: {room.id}, exits: {exits}")
 
-    global inv
     for x in exits:
         if x != inv.get(path_taken):
             traverse_path(player, x)
 
     if path_taken is not None:
         # print(f"reversing: {inv[path_taken]}")
+        if len(visited_rooms) == len(room_graph):
+            return
         player.path_taken.append(inv[path_taken])
         player.travel(inv[path_taken])
 
