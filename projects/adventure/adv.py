@@ -14,10 +14,10 @@ world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
-map_file = "maps/test_cross.txt"
+# map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+map_file = "maps/main_maze.txt"
 
 # path = Path("projects/adventure/" + map_file)
 path = map_file
@@ -44,44 +44,41 @@ inv = {
 }
 graph = {}
 
-def traverse_path(player, path_taken = None, prev = None):
-    if path_taken is not None:
-        # print(f"moving {path_taken}")
-        player.travel(path_taken)
-    room = player.current_room
-    global visited_rooms
-    global inv
-    if room.id in visited_rooms:
-        player.travel(inv[path_taken])
-        return
-    
-    visited_rooms.add(room.id)
-    player.map_room()
-    if path_taken is not None:
-        player.map[prev][path_taken] = room.id
-        player.map[room.id][inv[path_taken]] = prev
-        player.path_taken.append(path_taken)
-    exits = room.get_exits()
-    # print(f"room: {room.id}, exits: {exits}")
 
-    for x in exits:
-        if x != inv.get(path_taken):
-            traverse_path(player, x, room.id)
-
-    if path_taken is not None:
-        # print(f"reversing: {inv[path_taken]}")
-        if len(visited_rooms) == len(room_graph):
-            return
-        player.path_taken.append(inv[path_taken])
-        player.travel(inv[path_taken])
+def has_unopened_door(player):
+    id = player.current_room.id
+    return None in player.map[id].values()
 
 
-traverse_path(player)
-print(player.path_taken)
+player.map_room()
+visited_rooms = set([player.current_room.id])
+
+while len(visited_rooms) < len(room_graph):
+    while has_unopened_door(player):
+        room = player.current_room
+        exits = player.map[room.id]
+        possible_exits = [i[0] for i in exits.items() if i[1] is None]
+        x = random.choice(possible_exits)
+        player.travel(x)
+        if player.current_room.id in visited_rooms:
+            player.map_room(x,room.id)
+            player.travel(inv[x])
+            continue
+        traversal_path.append(x)
+        visited_rooms.add(player.current_room.id)
+        player.map_room(x, room.id)
+        break
+
+    return_path = player.BFS()
+    if return_path:
+        traversal_path.extend(return_path)
+        for d in return_path:
+            player.travel(d)
+
+
+
 print(player.map)
 
-traversal_path = player.path_taken
-        
 
 
 
