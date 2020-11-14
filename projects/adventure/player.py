@@ -2,6 +2,7 @@ class Player:
     def __init__(self, starting_room):
         self.current_room = starting_room
         self.path_taken = []
+        self.map = {}
     def travel(self, direction, show_rooms = False):
         next_room = self.current_room.get_room_in_direction(direction)
         if next_room is not None:
@@ -12,3 +13,13 @@ class Player:
             print(f"room: {self.current_room.id}, trying {direction}")
             print("You cannot move in that direction.")
             # breakpoint()
+
+    def map_room(self):
+        id = self.current_room.id
+        exits = self.current_room.get_exits()
+        if len(exits) > 0:
+            self.map[id] = {}
+
+            for x in exits:
+                self.map[id][x] = None
+
