@@ -1,4 +1,5 @@
 from random import shuffle
+from collections import deque
 
 
 class User:
@@ -75,10 +76,34 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        stack = deque()
+        stack.append(deque([user_id]))
+
+        while stack:
+            path = stack.pop()
+            node = path[-1]
+            if node in visited:
+                continue
+
+            else:
+                 visited[node] = path
+
+            neighbors = self.friendships[node]
+            for n in neighbors:
+                p = path.copy()
+                p.append(n)
+                stack.append(p)
+
+
+
+
+
         return visited
 
 
 if __name__ == "__main__":
+    from random import seed
+    seed(111)
     sg = SocialGraph()
     sg.populate_graph(10, 2)
     print(sg.friendships)
