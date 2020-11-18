@@ -1,7 +1,10 @@
 from random import shuffle
+
+
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -15,7 +18,10 @@ class SocialGraph:
         """
         if user_id == friend_id:
             print("WARNING: You cannot be friends with yourself")
-        elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
+        elif (
+            friend_id in self.friendships[user_id]
+            or user_id in self.friendships[friend_id]
+        ):
             print("WARNING: Friendship already exists")
         else:
             self.friendships[user_id].add(friend_id)
@@ -52,15 +58,11 @@ class SocialGraph:
         # Create friendships
         all_users = self.users.keys()
 
-        all_pairs = [(a,b) for a in all_users for b in all_users if a < b]
+        all_pairs = [(a, b) for a in all_users for b in all_users if a < b]
         shuffle(all_pairs)
 
-        for a,b in all_pairs[:(num_users * avg_friendships)//2]:
+        for a, b in all_pairs[: (num_users * avg_friendships) // 2]:
             self.add_friendship(a, b)
-
-
-
-        
 
     def get_all_social_paths(self, user_id):
         """
@@ -76,7 +78,7 @@ class SocialGraph:
         return visited
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sg = SocialGraph()
     sg.populate_graph(10, 2)
     print(sg.friendships)
