@@ -1,6 +1,7 @@
 """
 Simple graph implementation
 """
+from collections import deque
 from util import Stack, Queue  # These may come in handy
 
 
@@ -30,7 +31,7 @@ class Graph:
         """
         v:set = self.vertices[vertex_id]
 
-        return v.difference(self.visited)
+        return sorted(list(v.difference(self.visited)), reverse=True)
 
 
     def bft(self, starting_vertex):
@@ -128,32 +129,51 @@ class Graph:
         print()
 
 
-    def dfs(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
-        """
-        print("# DFS")
-        q = Stack()
-        self.visited = {1}
-        q.push([starting_vertex])
+    # def dfs(self, starting_vertex, destination_vertex):
+    #     """
+    #     Return a list containing a path from
+    #     starting_vertex to destination_vertex in
+    #     depth-first order.
+    #     """
+    #     print("# DFS")
+    #     q = Stack()
+    #     self.visited = {1}
+    #     q.push([starting_vertex])
 
 
-        while len(q) != 0:
-            path = q.pop()
-            if path[-1] == destination_vertex:
-                self.visited = set()
-                return path
+    #     while len(q) != 0:
+    #         path = q.pop()
+    #         if path[-1] == destination_vertex:
+    #             self.visited = set()
+    #             return path
 
-            to_visit:set = self.get_neighbors(path[-1])
+    #         to_visit:set = self.get_neighbors(path[-1])
             
-            new_q = [path + [n] for n in to_visit]
+    #         new_q = [path + [n] for n in to_visit]
 
-            q.multi_push(new_q)
-            self.visited = self.visited.union(to_visit)
+    #         q.multi_push(new_q)
+    #         self.visited = self.visited.union(to_visit)
 
+    #     print()
+
+    def dfs(self, starting_vertex, destination_vertex):
         print()
+        print("dfs test")
+        discovered = set()
+        path = []
+        stack = deque()
+        stack.append(starting_vertex)
+        while len(stack) > 0:
+            v = stack.pop()
+            print(f'visiting: {v}')
+            if v not in discovered:
+                path.append(v)
+                if v == destination_vertex:
+                    return path
+                discovered.add(v)
+                for edge in self.get_neighbors(v):
+                    stack.append(edge)
+
 
     def dfs_recursive(self, starting_vertex, destination_vertex):
         """
@@ -228,7 +248,7 @@ if __name__ == "__main__":
         1, 2, 4, 3, 7, 6, 5
         1, 2, 4, 3, 7, 5, 6
     """
-    graph.bft(1)
+    # graph.bft(1)
 
     """
     Valid DFT paths:
@@ -237,14 +257,14 @@ if __name__ == "__main__":
         1, 2, 4, 7, 6, 3, 5
         1, 2, 4, 6, 3, 5, 7
     """
-    graph.dft(1)
-    graph.dft_recursive(1)
+    # graph.dft(1)
+    # graph.dft_recursive(1)
 
     """
     Valid BFS path:
         [1, 2, 4, 6]
     """
-    print(graph.bfs(1, 6))
+    # print(graph.bfs(1, 6))
 
     """
     Valid DFS paths:
